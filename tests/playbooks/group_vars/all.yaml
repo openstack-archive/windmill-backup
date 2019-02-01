@@ -1,0 +1,2 @@
+---
+windmill_backup_src_dir: "{{ zuul.projects['git.openstack.org/openstack/windmill-backup'].src_dir }}"
