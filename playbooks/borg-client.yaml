@@ -1,0 +1,73 @@
+# Copyright 2019 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+---
+- name: Install borg-client
+  hosts: borg-client:!disabled
+
+  tasks:
+    - name: Setup openstack.borgbackup role
+      include_role:
+        name: openstack.borgbackup
+      vars:
+        borgbackup_task_manager:
+          - pre
+          - install
+
+    - name: Setup openstack.borgmatic role
+      include_role:
+        name: openstack.borgmatic
+
+    - name: Generage borgbackup SSH keys
+      become: true
+      become_user: borgbackup
+      command: ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -q -N ""
+      args:
+        creates: ~/.ssh/id_rsa
+
+    - name: Add borg-server SSH host keys to known_hosts
+      become: true
+      become_user: borgbackup
+      known_hosts:
+        hash_host: true
+        key: "{{ hostvars[item].ansible_host }} ssh-ed25519 {{ hostvars[item].ansible_facts['ssh_host_key_ed25519_public'] }}"
+        name: "{{ hostvars[item].ansible_host }}"
+      with_inventory_hostnames:
+        - borg-server:!disabled
+
+    - name: Read SSH public key
+      become: true
+      become_user: borgbackup
+      slurp:
+        src: ~/.ssh/id_rsa.pub
+      register: borg_id_rsa_pub
+
+    - name: Setup openstack.ssh role
+      become: true
+      become_user: "borg_{{ inventory_hostname_short }}"
+      include_role:
+        name: openstack.ssh
+        apply:
+          delegate_to: "{{ item }}"
+      vars:
+        ssh_task_manager:
+          - config
+        ssh_authorized_keys_content: "restrict,command=\"cd ~/repos;{{ borgbackup_pip_virtualenv }}/bin/borg serve --restrict-to-path ~/repos\" {{ borg_id_rsa_pub.content | b64decode | trim }}"
+        ssh_key_private_content: false
+        ssh_key_public_content: false
+        ssh_known_hosts_content: false
+        ssh_user_home: "/opt/backups/borg_{{ inventory_hostname_short }}"
+        ssh_user_name: "borg_{{ inventory_hostname_short }}"
+        ssh_user_group: borgbackup
+      with_inventory_hostnames:
+        - borg-server:!disabled
