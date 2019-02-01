@@ -1,0 +1,20 @@
+---
+- project-template:
+    name: windmill-backup-jobs-fedora-latest
+    check:
+      jobs:
+        - windmill-backup-fedora-latest
+    gate:
+      queue: windmill
+      jobs:
+        - windmill-backup-fedora-latest
+
+- project-template:
+    name: windmill-backup-jobs-bionic
+    check:
+      jobs:
+        - windmill-backup-ubuntu-bionic
+    gate:
+      queue: windmill
+      jobs:
+        - windmill-backup-ubuntu-bionic

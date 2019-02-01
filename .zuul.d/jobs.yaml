@@ -1,0 +1,33 @@
+---
+- job:
+    name: windmill-backup-base
+    pre-run: tests/playbooks/pre.yaml
+    run: tests/playbooks/run.yaml
+    post-run: tests/playbooks/post.yaml
+    required-projects:
+      - openstack/ansible-role-borgbackup
+      - openstack/ansible-role-borgmatic
+      - openstack/ansible-role-ssh
+    timeout: 3600
+
+# Testing for install_method: pip
+- job:
+    name: windmill-backup
+    parent: windmill-backup-base
+    vars:
+      windmill_backup_extra_vars_file: tests/extra-vars/pip.yaml
+
+- job:
+    name: windmill-backup-centos-7
+    parent: windmill-backup
+    nodeset: centos-7
+
+- job:
+    name: windmill-backup-fedora-latest
+    parent: windmill-backup
+    nodeset: fedora-latest
+
+- job:
+    name: windmill-backup-ubuntu-bionic
+    parent: windmill-backup
+    nodeset: ubuntu-bionic
