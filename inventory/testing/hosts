@@ -2,6 +2,10 @@ bastion ansible_connection=local
 
 [disabled]
 
+[borg:children]
+borg-client
+borg-server
+
 [borg-client]
 client01 ansible_host=127.0.2.1
 
