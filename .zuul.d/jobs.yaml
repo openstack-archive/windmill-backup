@@ -8,6 +8,7 @@
       - openstack/ansible-role-borgbackup
       - openstack/ansible-role-borgmatic
       - openstack/ansible-role-ssh
+      - openstack/windmill-backup
     timeout: 3600
 
 # Testing for install_method: pip
