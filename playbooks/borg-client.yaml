@@ -71,3 +71,8 @@
         ssh_user_group: borgbackup
       with_inventory_hostnames:
         - borg-server:!disabled
+
+    - name: Initialize an empty borg repository
+      become: true
+      become_user: borgbackup
+      command: "{{ borgmatic_pip_virtualenv }}/bin/borgmatic --init --encryption repokey"
