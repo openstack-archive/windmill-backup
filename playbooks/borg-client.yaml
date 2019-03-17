@@ -54,7 +54,7 @@
 
     - name: Setup openstack.ssh role
       become: true
-      become_user: "borg_{{ inventory_hostname_short }}"
+      become_user: "borg_{{ inventory_hostname }}"
       include_role:
         name: openstack.ssh
         apply:
@@ -66,8 +66,8 @@
         ssh_key_private_content: false
         ssh_key_public_content: false
         ssh_known_hosts_content: false
-        ssh_user_home: "/opt/backups/borg_{{ inventory_hostname_short }}"
-        ssh_user_name: "borg_{{ inventory_hostname_short }}"
+        ssh_user_home: "/opt/backups/borg_{{ inventory_hostname }}"
+        ssh_user_name: "borg_{{ inventory_hostname }}"
         ssh_user_group: borgbackup
       with_inventory_hostnames:
         - borg-server:!disabled
