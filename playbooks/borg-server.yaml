@@ -34,9 +34,9 @@
         borgbackup_task_manager:
           - pre
           - config
-        borgbackup_user_name: "borg_{{ borg_clients }}"
-        borgbackup_user_home: "/opt/backups/borg_{{ borg_clients }}"
+        borgbackup_user_name: "borg_{{ hostvars[borg_client].inventory_hostname_short }}"
+        borgbackup_user_home: "/opt/backups/borg_{{ hostvars[borg_client].inventory_hostname_short }}"
       with_inventory_hostnames:
         - borg-client:!disabled
       loop_control:
-        loop_var: borg_clients
+        loop_var: borg_client
