@@ -1,9 +1,0 @@
----
-- name: openstack.borgbackup
-  src: git+https://git.openstack.org/openstack/ansible-role-borgbackup
-
-- name: openstack.borgmatic
-  src: git+https://git.openstack.org/openstack/ansible-role-borgmatic
-
-- name: openstack.ssh
-  src: git+https://git.openstack.org/openstack/ansible-role-ssh
